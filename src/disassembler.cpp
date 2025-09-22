@@ -73,11 +73,11 @@ int Disassembler::Disassemble(ElfLoader *loader) {
           continue;
         }
 
+        Elf64_BpfMapDefinition *bpfmap =
+            (Elf64_BpfMapDefinition *)malloc(map_size);
         for (Symbol_Name_Addr sna : map_symbols) {
           // calculate the offset from the start of maps
           // output each part of the data
-          Elf64_BpfMapDefinition *bpfmap =
-              (Elf64_BpfMapDefinition *)malloc(map_size);
           memcpy(bpfmap, data + sna.value, map_size);
           std::cout << "\t" << sna.name << "{" << std::endl;
           std::cout << "\t\ttype: " << bpfmap->type << std::endl;
@@ -91,6 +91,8 @@ int Disassembler::Disassemble(ElfLoader *loader) {
           std::cout << "\t}" << std::endl;
         }
 
+        free(bpfmap);
+        bpfmap = nullptr;
       } else {
         n = cs_disasm(dis, reinterpret_cast<const uint8_t *>(data), size, 0, 0,
                       &insns);
