@@ -24,7 +24,20 @@ int Disassembler::Disassemble() {
     const char *data = s->get_data();
     ELFIO::Elf_Xword size = s->get_size();
     if (data) {
-      std::cout << s->get_name() << ":" << std::endl;
+      std::string sname = s->get_name();
+      std::cout << sname << ":" << std::endl;
+      
+      if (sname == "license") {
+        std::cout << "\t" << std::string(data, size) << std::endl;
+        continue;
+      } else if (sname == "version") {
+        if (size == 4) {
+          char* ver = (char *)data;
+          printf("\t%d.%d.%d\n", ver[2], ver[1], ver[0]);
+        }
+        continue;
+      }
+
       n = cs_disasm(dis, reinterpret_cast<const uint8_t*>(data), size, 0, 0, &insns);
       if (n <= 0) {
         std::cerr << "\tFAILED" << std::endl;
