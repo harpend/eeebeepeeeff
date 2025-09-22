@@ -1,7 +1,6 @@
+#include "disassembler.h"
 #include <elfio/elfio.hpp>
 #include <iostream>
-#include "loader.h"
-#include "disassembler.h"
 
 int main(int argc, char **argv) {
   if (argc < 2) {
@@ -9,10 +8,10 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-  ElfLoader* loader = new ElfLoader(std::string(argv[1]));
+  ElfLoader *loader = new ElfLoader(std::string(argv[1]));
   loader->LoadFile();
   std::vector<ELFIO::section *> sections = loader->GetCodeSections();
-  Disassembler* dis = new Disassembler(sections);
-  dis->Disassemble();
+  Disassembler *dis = new Disassembler(sections);
+  dis->Disassemble(loader);
   return 0;
 }
