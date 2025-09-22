@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <iostream>
+#include <iomanip>
 #include "disassembler.h"
 
 Disassembler::Disassembler(std::vector<ELFIO::section *> sections) {
@@ -32,7 +34,7 @@ int Disassembler::Disassemble() {
       for (size_t i = 0; i < n; i++) {
         std::cout << "\t";
         for (size_t j = 0; j < 8; j++) {
-          std::cout << "0x" << std::hex << insns[i].bytes[j] << " ";
+          std::cout << "0x" << std::setw(2) << std::setfill('0') << std::hex << (int)insns[i].bytes[j] << " ";
         }
 
         std::cout << insns[i].mnemonic << " " << insns[i].op_str << std::endl;
