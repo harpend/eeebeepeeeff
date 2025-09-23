@@ -101,14 +101,28 @@ int Disassembler::Disassemble(ElfLoader *loader) {
           continue;
         }
 
+        std::map<ELFIO::Elf64_Addr, std::string> relmap =
+            loader->GetRelocationMap(s);
         for (size_t i = 0; i < n; i++) {
-          std::cout << "\t";
+          uint64_t ins_addr = insns[i].address + s->get_address();
+          std::cout << "\t0x" << std::setw(8) << std::setfill('0') << std::hex
+                    << ins_addr << " ";
           for (size_t j = 0; j < 8; j++) {
             std::cout << "0x" << std::setw(2) << std::setfill('0') << std::hex
                       << (int)insns[i].bytes[j] << " ";
           }
 
-          std::cout << insns[i].mnemonic << " " << insns[i].op_str << std::endl;
+          auto it = relmap.find(ins_addr);
+          if (it != relmap.end()) { // perform relocation if possible
+            // insns[i].id == BPF_INS_CALL TODO: add specific relocation
+            // handling
+            std::string relsymbol = relmap.find(ins_addr)->second;
+            std::cout << insns[i].mnemonic << " " << insns[i].op_str << " <"
+                      << relsymbol << ">" << std::endl;
+          } else {
+            std::cout << insns[i].mnemonic << " " << insns[i].op_str
+                      << std::endl;
+          }
         }
       }
     }
